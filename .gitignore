@@ -1,0 +1,29 @@
+# R / RStudio
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+.Renviron
+
+# Build and check artifacts
+*.Rcheck/
+*.tar.gz
+inst/doc/
+docs/
+check*.txt
+tests/testthat/_problems/
+
+# Data and databases (large; never commit)
+*.duckdb
+*.duckdb.wal
+*.parquet
+parquet/
+*.7z
+*.zip
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

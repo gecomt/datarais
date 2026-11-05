@@ -1,0 +1,53 @@
+Package: datarais
+Type: Package
+Title: Access Brazilian RAIS Microdata via 'DuckDB'
+Version: 0.1.0
+Authors@R: person("Alexsandro", "Prado",
+    email = "alexsandroprado@ufersa.edu.br",
+    role  = c("aut", "cre", "cph"))
+Description:
+    Provides access to the microdata of the Brazilian 'Relacao Anual de
+    Informacoes Sociais' (RAIS), the annual formal employment census of the
+    Ministry of Labour, covering employment records and establishments from
+    1985 to 2025. Files are downloaded from the 'HuggingFace' dataset
+    <https://huggingface.co/datasets/alexsandroprado/rais>, extracted as a
+    stream and loaded into a local 'DuckDB' database for fast queries with
+    'SQL' or 'dplyr'. Both the state-based (1985-2017) and the region-based
+    (2018 onwards) file layouts are supported, with automatic normalisation
+    of variable names. Messages are available in English and Portuguese.
+License: MIT + file LICENSE
+Encoding: UTF-8
+SystemRequirements: 7-Zip (https://www.7-zip.org/) for
+    extracting pre-2020 RAIS files (PPMd compression). Not required
+    for 2020+ files (LZMA compression).
+Language: en
+LazyData: true
+Depends: R (>= 4.1.0)
+Imports:
+    DBI (>= 1.1.0),
+    archive,
+    cli (>= 3.4.0),
+    dbplyr,
+    dplyr,
+    duckdb (>= 0.9.0),
+    furrr (>= 0.3.0),
+    future,
+    glue,
+    httr2 (>= 1.0.0),
+    purrr (>= 1.0.0),
+    progressr,
+    readr,
+    rlang,
+    tibble,
+    tools
+Suggests:
+    ggplot2,
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+Roxygen: list(markdown = TRUE)
+Config/roxygen2/version: 8.1.1
+Config/testthat/edition: 3
+VignetteBuilder: knitr
+URL: https://github.com/alexsandroprado/datarais
+BugReports: https://github.com/alexsandroprado/datarais/issues

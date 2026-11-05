@@ -1,0 +1,72 @@
+url: https://alexsandroprado.github.io/datarais/
+
+template:
+  bootstrap: 5
+  bootswatch: flatly
+
+home:
+  title: "datarais • Microdados da RAIS em DuckDB"
+  description: >
+    Acesse os microdados da RAIS (vínculos, estabelecimentos e trabalho
+    doméstico) via HuggingFace, com armazenamento em DuckDB e
+    normalização automática de variáveis.
+
+navbar:
+  structure:
+    left:  [intro, reference, articles, news]
+    right: [search, github]
+  components:
+    github:
+      icon: fab fa-github fa-lg
+      href: https://github.com/alexsandroprado/datarais
+
+reference:
+  - title: "Pipeline principal"
+    desc: "Funções para o fluxo completo: download → parse → DuckDB"
+    contents:
+      - rais_load
+      - rais_update
+      - rais_download
+      - rais_parse
+      - rais_parse_batch
+
+  - title: "Banco de dados"
+    desc: "Conexão, gravação e exportação"
+    contents:
+      - rais_connect
+      - rais_to_duckdb
+      - rais_to_parquet
+      - rais_info
+
+  - title: "Catálogo e status"
+    desc: "Verificar disponibilidade e conectividade"
+    contents:
+      - rais_available
+      - rais_available_years
+      - rais_status
+
+  - title: "Variáveis"
+    desc: "Normalização e dicionário de nomes de colunas"
+    contents:
+      - rais_rename_cols
+      - rais_col_dictionary
+      - rais_translate_cols
+      - rais_layouts
+
+  - title: "Layouts e downloads auxiliares"
+    contents:
+      - rais_download_layouts
+
+  - title: "Internacionalização"
+    contents:
+      - rais_set_language
+      - rais_language
+
+  - title: "Dados de referência"
+    contents:
+      - uf_codigos
+
+news:
+  releases:
+    - text: "datarais 0.1.0"
+      href: news/index.html

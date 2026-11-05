@@ -1,0 +1,21 @@
+linters: linters_with_defaults(
+  # Aumentar limite de linha para 120 (rename.R e i18n.R têm dicionários longos)
+  line_length_linter(120),
+
+  # Permitir UPPER_CASE para constantes internas (ex: .HF_BASE, .DICT_VINCULOS)
+  object_name_linter(regexes = c(
+    snake_case    = "^[a-z][a-z0-9_]*$",
+    dotted_snake  = "^\\.[a-z][a-z0-9_]*$",
+    UPPER_CONST   = "^\\.[A-Z][A-Z0-9_]*$",
+    camelCase     = "^[a-z][a-zA-Z0-9]*$"
+  )),
+
+  # Desabilitar para arquivos de dicionário (rename.R, i18n.R)
+  commented_code_linter = NULL,
+  indentation_linter(indent = 2L)
+)
+
+exclusions: list(
+  "R/rename.R" = list(line_length_linter = Inf),
+  "R/i18n.R"   = list(line_length_linter = Inf)
+)

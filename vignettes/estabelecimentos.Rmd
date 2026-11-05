@@ -1,0 +1,115 @@
+---
+title: "Establishments"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Establishments}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+Besides employment records (*vinculos*), the RAIS has a file with one row per
+**establishment**. In **datarais** it is requested with
+`type = "estabelecimentos"` and stored in the DuckDB table `rais_estab`.
+
+## Downloading and loading
+
+```{r load, eval=FALSE}
+library(datarais)
+
+db <- file.path(tempdir(), "rais.duckdb")
+
+# Establishments only
+rais_load(years = 2022, type = "estabelecimentos", db_path = db)
+
+# Employment records and establishments together
+rais_load(years = 2022, type = "all", db_path = db)
+```
+
+The establishment file is named `RAIS_ESTAB_PUB.7z` from 2018 onwards and
+`ESTB{year}.7z` (or `Estb{year}.zip` in some years) before that. You do not need
+to remember the names: `rais_layouts()` lists them and `rais_hf_files()`
+shows what exists in the repository.
+
+## A small runnable example
+
+The chunk below uses a synthetic `rais_estab` table with the real column names.
+The numbers are random.
+
+```{r toy}
+library(datarais)
+library(dplyr)
+
+set.seed(1)
+db  <- tempfile(fileext = ".duckdb")
+con <- rais_connect(db, quiet = TRUE)
+
+DBI::dbWriteTable(con, "rais_estab", data.frame(
+  ano                     = 2022L,
+  sigla_uf                = sample(c(23L, 24L, 35L), 60, replace = TRUE),
+  tamanho_estabelecimento = sample(1:4, 60, replace = TRUE),
+  qtd_vinculos_ativos     = rpois(60, 12),
+  ind_simples             = sample(0:1, 60, replace = TRUE)
+))
+```
+
+`rais_tbl(con, type = "estabelecimentos")` returns the establishment table as a
+lazy dplyr table:
+
+```{r estab-uf}
+rais_tbl(con, type = "estabelecimentos") |>
+  group_by(sigla_uf) |>
+  summarise(
+    estabelecimentos = n(),
+    vinculos_ativos  = sum(qtd_vinculos_ativos, na.rm = TRUE)
+  ) |>
+  collect() |>
+  left_join(uf_codigos, by = c("sigla_uf" = "codigo")) |>
+  mutate(vinculos_por_estab = vinculos_ativos / estabelecimentos) |>
+  arrange(desc(estabelecimentos))
+```
+
+Establishments by size class and by participation in the Simples regime:
+
+```{r estab-size}
+rais_tbl(con, type = "estabelecimentos") |>
+  count(tamanho_estabelecimento, ind_simples) |>
+  collect() |>
+  arrange(tamanho_estabelecimento, ind_simples)
+```
+
+```{r cleanup}
+DBI::dbDisconnect(con, shutdown = TRUE)
+unlink(db)
+```
+
+## Main variables
+
+| Variable | Meaning |
+|----------|---------|
+| `ano` | Reference year |
+| `sigla_uf` | State (numeric IBGE code) |
+| `id_municipio` | Municipality (IBGE code) |
+| `natureza_juridica` | Legal nature of the establishment |
+| `tamanho_estabelecimento` | Size class by number of employees |
+| `cnae20_classe`, `cnae20_subclasse` | Economic activity (CNAE 2.0) |
+| `qtd_vinculos_ativos` | Active jobs on 31 December |
+| `qtd_vinculos_clt`, `qtd_vinculos_estat` | Jobs by legal regime |
+| `ind_simples`, `ind_participa_pat` | Simples regime and PAT indicators |
+
+Use `rais_col_info(type = "estabelecimentos")` to see the full list, and
+`rais_col_dictionary()` for the mapping from the original column names.
+
+## Linking establishments and employment records
+
+Both tables share `ano`, `sigla_uf`, `id_municipio` and `cnae20_classe`. The
+public microdata do not carry an identifier that links a job to its
+establishment, so joins are done at an aggregate level, for example jobs per
+state and activity from `rais_novo` against establishments per state and
+activity from `rais_estab`.
+
+See `vignette("serie-historica", package = "datarais")` for time series built
+from the employment records.

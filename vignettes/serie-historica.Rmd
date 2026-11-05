@@ -1,0 +1,244 @@
+---
+title: "Employment time series by state and sector"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Employment time series by state and sector}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7, fig.height = 4)
+has_gg <- requireNamespace("ggplot2", quietly = TRUE)
+```
+
+This vignette shows how to build historical series of formal employment with
+**datarais**, from the DuckDB tables to the charts. To keep the vignette fast
+and runnable without internet access, it uses a **small synthetic table** with
+the same columns as the real data. The numbers are random and meaningless; the
+code is what you would run on the real database (see the last section).
+
+## 1. The data
+
+The RAIS tables are split by layout: `rais_antigo` holds the years up to 2017
+and `rais_novo` the years from 2018. The synthetic database below mimics that
+split.
+
+```{r toy-data}
+library(datarais)
+library(dplyr)
+
+set.seed(2024)
+cnae <- c("01113", "10113", "29107", "41018", "47113",
+          "62015", "84116", "85139", "86100")
+ufs  <- c(23L, 24L, 29L, 35L)   # CE, RN, BA, SP (IBGE codes)
+
+make_year <- function(y) {
+  d <- expand.grid(ano = y, sigla_uf = ufs, cnae20_classe = cnae,
+                   i = 1:6, stringsAsFactors = FALSE)
+  d$i <- NULL
+  d$vl_remun_media_nom <- round(runif(nrow(d), 1300, 6500) * (1 + 0.04 * (y - 2016)), 2)
+  d
+}
+
+anos <- 2016:2019
+db   <- tempfile(fileext = ".duckdb")
+con  <- rais_connect(db, quiet = TRUE)
+DBI::dbWriteTable(con, "rais_antigo", bind_rows(lapply(2016:2017, make_year)))
+DBI::dbWriteTable(con, "rais_novo",   bind_rows(lapply(2018:2019, make_year)))
+```
+
+A series that crosses 2018 is built year by year: `rais_tbl(con, year = y)`
+chooses the right table and filters the year.
+
+## 2. Series by state
+
+In the RAIS tables, `sigla_uf` is the numeric IBGE code of the state. The
+`uf_codigos` table translates it to the abbreviation and the region.
+
+```{r serie-uf}
+serie_uf <- purrr::map(anos, function(y) {
+  rais_tbl(con, year = y) |>
+    group_by(ano, sigla_uf) |>
+    summarise(
+      vinculos      = n(),
+      salario_medio = mean(vl_remun_media_nom, na.rm = TRUE),
+      .groups = "drop"
+    ) |>
+    collect()
+}) |>
+  bind_rows() |>
+  left_join(uf_codigos, by = c("sigla_uf" = "codigo")) |>
+  arrange(ano, sigla)
+
+serie_uf
+```
+
+```{r plot-uf, eval=has_gg}
+library(ggplot2)
+
+serie_uf |>
+  filter(regiao == "Nordeste") |>
+  ggplot(aes(x = ano, y = vinculos, colour = sigla)) +
+  geom_line(linewidth = 0.8) +
+  geom_point(size = 1.5) +
+  scale_x_continuous(breaks = anos) +
+  labs(
+    title    = "Formal employment in the Northeast (synthetic data)",
+    subtitle = "Number of job records per year",
+    x = NULL, y = "Jobs", colour = "State"
+  ) +
+  theme_minimal(base_size = 12)
+```
+
+## 3. Series by sector (CNAE 2.0)
+
+The tables store the CNAE 2.0 class (5 digits). The division (2 digits) used
+below is its first two digits. Sums and counts are computed in the database and
+combined afterwards, so the average salary of a division is weighted by the
+number of jobs.
+
+```{r serie-setor}
+setores <- tibble::tibble(
+  divisao = c("01", "10", "29", "41", "47", "62", "84", "85", "86"),
+  setor   = c("Agriculture", "Food products", "Motor vehicles",
+              "Construction", "Retail trade", "IT services",
+              "Public administration", "Education", "Health care")
+)
+
+por_classe <- purrr::map(anos, function(y) {
+  rais_tbl(con, year = y) |>
+    filter(!is.na(cnae20_classe)) |>
+    group_by(ano, cnae20_classe) |>
+    summarise(
+      vinculos = n(),
+      soma_rem = sum(vl_remun_media_nom, na.rm = TRUE),
+      n_rem    = sum(ifelse(is.na(vl_remun_media_nom), 0, 1), na.rm = TRUE),
+      .groups  = "drop"
+    ) |>
+    collect()
+}) |>
+  bind_rows()
+
+serie_setor <- por_classe |>
+  mutate(divisao = substr(sprintf("%05d", as.integer(cnae20_classe)), 1, 2)) |>
+  inner_join(setores, by = "divisao") |>
+  group_by(ano, setor) |>
+  summarise(
+    vinculos      = sum(vinculos),
+    salario_medio = sum(soma_rem) / sum(n_rem),
+    .groups = "drop"
+  )
+
+serie_setor |>
+  filter(ano == max(ano)) |>
+  arrange(desc(salario_medio))
+```
+
+```{r plot-setor, eval=has_gg}
+serie_setor |>
+  ggplot(aes(x = ano, y = salario_medio, colour = setor)) +
+  geom_line(linewidth = 0.8) +
+  geom_point(size = 1.5) +
+  scale_x_continuous(breaks = anos) +
+  labs(
+    title    = "Average salary by sector (synthetic data)",
+    x = NULL, y = "Average salary", colour = "Sector"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom")
+```
+
+## 4. Average salary by state and sector
+
+```{r heatmap, eval=has_gg}
+ano_ref <- max(anos)
+
+rais_tbl(con, year = ano_ref) |>
+  filter(!is.na(cnae20_classe)) |>
+  group_by(sigla_uf, cnae20_classe) |>
+  summarise(
+    soma_rem = sum(vl_remun_media_nom, na.rm = TRUE),
+    n_rem    = sum(ifelse(is.na(vl_remun_media_nom), 0, 1), na.rm = TRUE),
+    .groups  = "drop"
+  ) |>
+  collect() |>
+  left_join(uf_codigos, by = c("sigla_uf" = "codigo")) |>
+  filter(regiao == "Nordeste") |>
+  mutate(divisao = substr(sprintf("%05d", as.integer(cnae20_classe)), 1, 2)) |>
+  inner_join(setores, by = "divisao") |>
+  group_by(sigla, setor) |>
+  summarise(salario = sum(soma_rem) / sum(n_rem), .groups = "drop") |>
+  ggplot(aes(x = setor, y = sigla, fill = salario)) +
+  geom_tile(colour = "white", linewidth = 0.4) +
+  geom_text(aes(label = round(salario)), size = 2.5, colour = "white") +
+  scale_fill_viridis_c(option = "plasma") +
+  labs(
+    title = paste("Average salary by sector and state,", ano_ref, "(synthetic data)"),
+    x = NULL, y = NULL, fill = "Average\nsalary"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(axis.text.x = element_text(angle = 35, hjust = 1))
+```
+
+```{r cleanup}
+DBI::dbDisconnect(con, shutdown = TRUE)
+unlink(db)
+```
+
+## 5. Reading the results correctly
+
+Before using these series in a study, keep in mind:
+
+* **Nominal values.** `vl_remun_media_nom` is in current reais of each year.
+  To compare years, deflate it (for example with the IPCA) before averaging
+  across time.
+* **State column.** `sigla_uf` holds the IBGE code, not the abbreviation. Join
+  with `uf_codigos` as shown above.
+* **CNAE availability.** `cnae20_classe` exists only from 2006. Series by sector
+  that start earlier need the CNAE 1.0 variable (`cnae95_classe`) and a
+  correspondence table.
+* **Layout change in 2018.** Files up to 2017 are split by state and from 2018
+  by region, with different variables. Check `rais_layouts()` and
+  `rais_col_dictionary()` before comparing variables across the break.
+* **Active jobs.** The tables contain job records, which are not the same as
+  employed people. Filter the employment status variable if you need only jobs
+  active on 31 December.
+
+## 6. Running it on the real data
+
+The code above works on the real database. Because the files are large, start
+small. For the old layout (up to 2017) the files are split by state, so
+`state` limits the download:
+
+```{r real-small, eval=FALSE}
+db <- "rais.duckdb"
+
+# Two years, one state: a small download (layout up to 2017)
+rais_load(years = 2016:2017, state = "RN", db_path = db)
+con <- rais_connect(db)
+```
+
+From 2018 onwards `state` is ignored, because the files are distributed by
+region: the whole region file is downloaded, and you filter the state after
+loading, for example with `filter(sigla_uf == 24L)`.
+
+For the full series, load all the years you need (this is a large download)
+and reuse the code of the previous sections with `anos <- 2010:2023`:
+
+```{r real-full, eval=FALSE}
+options(
+  datarais.cache_dir = tools::R_user_dir("datarais", "cache"),
+  datarais.workers   = 3
+)
+rais_load(years = 2010:2023, type = "vinculos", db_path = db)
+```
+
+To share the result with Python, Spark or other tools, export to Parquet. Close
+the connection first, because DuckDB does not allow a second connection to the
+same file with a different configuration:
+
+```{r parquet, eval=FALSE}
+DBI::dbDisconnect(con, shutdown = TRUE)
+rais_to_parquet(db, output_dir = "parquet", partition_by = "sigla_uf")
+```

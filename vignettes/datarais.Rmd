@@ -1,0 +1,158 @@
+---
+title: "Getting started with datarais"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with datarais}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+The **datarais** package gives access to the microdata of the Brazilian
+*Relacao Anual de Informacoes Sociais* (RAIS), the annual formal employment
+census of the Ministry of Labour. Files are downloaded from the
+[HuggingFace dataset](https://huggingface.co/datasets/alexsandroprado/rais),
+read as a stream and stored in a local DuckDB database that can be queried
+with dplyr or SQL.
+
+## Installation
+
+```{r install, eval=FALSE}
+# install.packages("pak")
+pak::pak("alexsandroprado/datarais")
+```
+
+## Basic workflow
+
+The steps below download real data (files can be large), so they are shown
+but not run in this vignette.
+
+```{r workflow, eval=FALSE}
+library(datarais)
+library(dplyr)
+
+# 1. Check the connection and the available years
+rais_status()
+rais_available(n = 5)
+
+# 2. Download, parse and load into a DuckDB file
+db <- file.path(tempdir(), "rais.duckdb")
+rais_load(years = 2022, db_path = db)
+
+# 3. Connect and query with dplyr
+con <- rais_connect(db)
+
+rais_tbl(con, year = 2022) |>
+  group_by(sigla_uf) |>
+  summarise(
+    vinculos      = n(),
+    salario_medio = mean(vl_remun_media_nom, na.rm = TRUE)
+  ) |>
+  collect()
+
+# 4. Close the connection before exporting to Parquet
+DBI::dbDisconnect(con, shutdown = TRUE)
+rais_to_parquet(db, output_dir = file.path(tempdir(), "parquet"))
+```
+
+`rais_load()` returns a summary of the database, not a connection. Use
+`rais_connect()` to query the data, and close the connection with
+`DBI::dbDisconnect(con, shutdown = TRUE)` when you are done.
+
+Downloads are stored in a temporary directory and run sequentially by
+default. For a persistent cache and parallel downloads, set:
+
+```{r options, eval=FALSE}
+options(
+  datarais.cache_dir = tools::R_user_dir("datarais", "cache"),
+  datarais.workers   = 3
+)
+```
+
+## A small runnable example
+
+The chunk below uses a tiny table with the same column names as the real
+data, so it runs without internet access.
+
+```{r toy}
+library(datarais)
+library(dplyr)
+
+db  <- tempfile(fileext = ".duckdb")
+con <- rais_connect(db, quiet = TRUE)
+
+DBI::dbWriteTable(con, "rais_novo", data.frame(
+  ano                = 2022L,
+  sigla_uf           = c(23L, 23L, 24L, 35L),
+  vl_remun_media_nom = c(1800, 2500, 2100, 4200)
+))
+
+rais_tbl(con, year = 2022) |>
+  group_by(sigla_uf) |>
+  summarise(
+    vinculos      = n(),
+    salario_medio = mean(vl_remun_media_nom, na.rm = TRUE)
+  ) |>
+  collect() |>
+  left_join(uf_codigos, by = c("sigla_uf" = "codigo")) |>
+  arrange(sigla)
+
+DBI::dbDisconnect(con, shutdown = TRUE)
+unlink(db)
+```
+
+In the RAIS tables, `sigla_uf` holds the numeric IBGE code of the state, and
+`uf_codigos` translates it to the two-letter abbreviation and the region.
+
+## File layouts
+
+The RAIS file layout changed over time (state files until 2017, region files
+from 2018 onwards, and different compression and variables). `rais_layouts()`
+summarises the differences.
+
+```{r layouts}
+layouts <- rais_layouts(verbose = FALSE)
+layouts[, c("periodo", "fonte", "encoding", "compressao")]
+```
+
+## Variable dictionary
+
+```{r dictionary, eval=FALSE}
+rais_col_dictionary(search = "remun")
+rais_col_info("vl_remun_media_nom")
+```
+
+## Requirements and troubleshooting
+
+* **7-Zip.** Files up to 2019 use PPMd compression, which needs
+  [7-Zip](https://www.7-zip.org/) installed on the computer. Files from 2020
+  onwards (LZMA) work without it. `rais_layouts()` shows which periods are
+  affected.
+* **Disk and memory.** One year of employment records is several GB once
+  decompressed. Use a 64-bit R, a few GB of free memory and enough disk for the
+  downloads plus the DuckDB file. Start with one or two years.
+* **Failed downloads.** Each file is tried three times. A `404` means the file
+  does not exist in the repository for that year or region. Check what is
+  available with `rais_available()` and `rais_hf_files(years = 2022)`, and
+  call `rais_status()` to test the connection to HuggingFace.
+* **Slow downloads.** Increase `timeout` (seconds per file), or raise
+  `workers` for parallel downloads. The downloads are not repeated: files
+  already in the cache are reused.
+* **Locked database.** DuckDB allows only one read-write connection to a file at
+  a time. Close connections with `DBI::dbDisconnect(con, shutdown = TRUE)`
+  before opening the file again or exporting it.
+
+## Where to go next
+
+| Topic | Where to look |
+|-------|---------------|
+| Download, parse and load in one step | `?rais_load`, `?rais_update` |
+| Only download or only parse | `?rais_download`, `?rais_parse` |
+| Query a table lazily with dplyr | `?rais_tbl`, `?rais_connect` |
+| Variables and renaming | `?rais_col_dictionary`, `?rais_col_info`, `?rais_rename_cols` |
+| Time series by state and sector | `vignette("serie-historica", package = "datarais")` |
+| Establishments | `vignette("estabelecimentos", package = "datarais")` |
+| Export | `?rais_to_parquet` |

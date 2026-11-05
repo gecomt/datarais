@@ -1,0 +1,458 @@
+# datarais message catalog
+# Copyright (C) 2025 Alexsandro Prado
+# This file is distributed under the MIT License.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: datarais 0.1.0\n"
+"Report-Msgid-Bugs-To: alexsandroprado@ufersa.edu.br\n"
+"POT-Creation-Date: 2026-08-30 04:20+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: R/catalog.R:41
+msgid "Querying HuggingFace repository ({.url %s})..."
+msgstr ""
+
+#: R/catalog.R:91
+msgid "No year found in the HuggingFace repository for type '%s'."
+msgstr ""
+
+#: R/catalog.R:102
+msgid "Vinculos empregaticios"
+msgstr ""
+
+#: R/catalog.R:103
+#: R/layouts.R:267
+msgid "Estabelecimentos"
+msgstr ""
+
+#: R/catalog.R:104
+msgid "Trabalho domestico"
+msgstr ""
+
+#: R/catalog.R:106
+msgid "Available years - %s"
+msgstr ""
+
+#: R/catalog.R:114
+msgid "%d year(s) listed"
+msgstr ""
+
+#: R/catalog.R:115
+msgid "Use {.code rais_load(years = %d)} to download the most recent."
+msgstr ""
+
+#: R/database.R:27
+msgid "Connected to {.path %s}"
+msgstr ""
+
+#: R/database.R:71
+msgid "Empty data.frame - nothing to write."
+msgstr ""
+
+#: R/database.R:82
+msgid "{.arg db_path} or {.arg .con} must be provided."
+msgstr ""
+
+#: R/database.R:90
+msgid "Column {.col ano} not found in the data.frame."
+msgstr ""
+
+#: R/database.R:95
+msgid "Empty data.frame after cleaning - nothing to write."
+msgstr ""
+
+#: R/database.R:110
+msgid "%d year(s) already in DB - skipping."
+msgstr ""
+
+#: R/database.R:111
+msgid "Use {.code overwrite_years = TRUE} to force."
+msgstr ""
+
+#: R/database.R:115
+msgid "No new data to insert."
+msgstr ""
+
+#: R/database.R:123
+msgid "%s record(s) inserted in {.val %s}"
+msgstr ""
+
+#: R/database.R:146
+#: R/database.R:460
+msgid "Database not found: {.path %s}"
+msgstr ""
+
+#: R/database.R:156
+#: R/database.R:474
+msgid "No RAIS table found in {.path %s}."
+msgstr ""
+
+#: R/database.R:181
+msgid "datarais - {.path %s}"
+msgstr ""
+
+#: R/database.R:182
+msgid "File size: %s"
+msgstr ""
+
+#: R/database.R:183
+msgid "Tables"
+msgstr ""
+
+#: R/database.R:188
+msgid "Records : %s"
+msgstr ""
+
+#: R/database.R:189
+msgid "Years   : %s"
+msgstr ""
+
+#: R/database.R:248
+msgid "rais_load"
+msgstr ""
+
+#: R/database.R:250
+msgid "Years: %d-%d"
+msgstr ""
+
+#: R/database.R:251
+msgid "Type : %s"
+msgstr ""
+
+#: R/database.R:252
+msgid "DB   : {.path %s}"
+msgstr ""
+
+#: R/database.R:256
+msgid "1/3  Download"
+msgstr ""
+
+#: R/database.R:272
+msgid "No files available to process."
+msgstr ""
+
+#: R/database.R:277
+msgid "2/3  Parse and load into DuckDB"
+msgstr ""
+
+#: R/database.R:286
+msgid "Files"
+msgstr ""
+
+#: R/database.R:298
+#: R/parse.R:357
+msgid "Error in {.path %s}: %s"
+msgstr ""
+
+#: R/database.R:318
+msgid "3/3  Done"
+msgstr ""
+
+#: R/database.R:320
+msgid "Total inserted: %s records"
+msgstr ""
+
+#: R/database.R:360
+msgid "rais_update"
+msgstr ""
+
+#: R/database.R:375
+msgid "Failed to query HuggingFace: %s"
+msgstr ""
+
+#: R/database.R:381
+msgid "No year found in HuggingFace."
+msgstr ""
+
+#: R/database.R:396
+msgid "Database already up to date."
+msgstr ""
+
+#: R/database.R:397
+msgid "Max in DB: %d | Available: %d"
+msgstr ""
+
+#: R/database.R:406
+msgid "%d new year(s) found"
+msgstr ""
+
+#: R/database.R:407
+msgid "Period: %d - %d"
+msgstr ""
+
+#: R/database.R:463
+msgid "Directory created: {.path %s}"
+msgstr ""
+
+#: R/database.R:480
+msgid "Table(s) not found: {.val {invalidas}}"
+msgstr ""
+
+#: R/database.R:481
+msgid "Available: {.val {tabs_disponiveis}}"
+msgstr ""
+
+#: R/database.R:486
+msgid "Exporting to Parquet"
+msgstr ""
+
+#: R/database.R:488
+msgid "%d table(s) to export"
+msgstr ""
+
+#: R/database.R:489
+msgid "Output: {.path %s}"
+msgstr ""
+
+#: R/database.R:509
+msgid "{tab}: already exists. Use {.code overwrite = TRUE}."
+msgstr ""
+
+#: R/database.R:522
+msgid "{tab}: %s records → {.path %s}"
+msgstr ""
+
+#: R/database.R:528
+msgid "Error exporting %s: %s"
+msgstr ""
+
+#: R/database.R:534
+msgid "Done"
+msgstr ""
+
+#: R/database.R:536
+msgid "%d table(s) exported"
+msgstr ""
+
+#: R/database.R:549
+msgid "Column {.col fonte_tipo} not found."
+msgstr ""
+
+#: R/database.R:550
+msgid "Provide {.arg table} manually."
+msgstr ""
+
+#: R/database.R:555
+msgid "Data frame mixes RAIS types: {.val {tipo}}."
+msgstr ""
+
+#: R/database.R:556
+msgid "Parse and write each type separately."
+msgstr ""
+
+#: R/database.R:564
+msgid "Unknown type: {.val {tipo}}"
+msgstr ""
+
+#: R/download.R:90
+msgid "Failed to download {.url %s} after 3 attempts."
+msgstr ""
+
+#: R/download.R:189
+#: R/download.R:367
+msgid "Downloading"
+msgstr ""
+
+#: R/download.R:275
+msgid "No valid year/file to download."
+msgstr ""
+
+#: R/download.R:279
+msgid "Download RAIS Microdata"
+msgstr ""
+
+#: R/download.R:281
+msgid "%d file(s) to process"
+msgstr ""
+
+#: R/download.R:283
+#: R/download.R:350
+msgid "Cache: {.path %s}"
+msgstr ""
+
+#: R/download.R:284
+msgid "Workers: %d"
+msgstr ""
+
+#: R/download.R:290
+msgid "Summary"
+msgstr ""
+
+#: R/download.R:349
+msgid "Download RAIS layouts"
+msgstr ""
+
+#: R/download.R:355
+msgid "Listing - %s"
+msgstr ""
+
+#: R/download.R:359
+msgid "No layout found in {.url %s}."
+msgstr ""
+
+#: R/layouts.R:258
+msgid "Layouts da RAIS por período"
+msgstr ""
+
+#: R/layouts.R:263
+msgid "Vínculos"
+msgstr ""
+
+#: R/normalize.R:143
+#: R/rename.R:128
+msgid "%d unrecognised column(s) kept as-is: %s"
+msgstr ""
+
+#: R/parse.R:81
+#: R/parse.R:86
+msgid "Error reading {.path %s}: %s"
+msgstr ""
+
+#: R/parse.R:143
+msgid "No .txt found in {.path %s}."
+msgstr ""
+
+#: R/parse.R:162
+msgid "Failed to extract {.path %s}: %s"
+msgstr ""
+
+#: R/parse.R:166
+msgid "No .txt found in {.path %s}. Skipping."
+msgstr ""
+
+#: R/parse.R:211
+msgid "Failed to extract {.path %s}."
+msgstr ""
+
+#: R/parse.R:281
+msgid "File not found: {.path %s}"
+msgstr ""
+
+#, no-c-format
+msgid "Skipping %d preliminary file(s): the full release is available."
+msgstr ""
+
+#, no-c-format
+msgid "Unsupported file extension: {.path %s}. Use .7z or .zip."
+msgstr ""
+
+#: R/parse.R:305
+msgid "Year %d uses PPMd compression (pre-2020)."
+msgstr ""
+
+#: R/parse.R:347
+msgid "No valid file to parse."
+msgstr ""
+
+#: R/parse.R:350
+msgid "Reading %d file(s)..."
+msgstr ""
+
+#: R/parse.R:364
+msgid "No data read."
+msgstr ""
+
+#: R/parse.R:368
+msgid "%s records read"
+msgstr ""
+
+#: R/parse.R:369
+msgid "%d columns"
+msgstr ""
+
+#: R/rais.R:129
+msgid "Invalid {.arg years} argument."
+msgstr ""
+
+#: R/rais.R:130
+msgid "Provide a numeric vector of years between 1985 and %d."
+msgstr ""
+
+#: R/rais.R:134
+msgid "{.arg years} contains NA values."
+msgstr ""
+
+#: R/rais.R:139
+msgid "Invalid years: {.val {invalid}}"
+msgstr ""
+
+#: R/rais.R:140
+msgid "Provide years between 1985 and %d."
+msgstr ""
+
+#: R/rais.R:152
+msgid "Invalid state(s): {.val {invalid}}"
+msgstr ""
+
+#: R/rais.R:153
+msgid "Use two-letter codes: {.val {names(.UF_CODIGOS)}}"
+msgstr ""
+
+#: R/rename.R:132
+msgid "%d unrecognised column(s) dropped: %s"
+msgstr ""
+
+#: R/rename.R:185
+msgid "Table '%s' not found in the database."
+msgstr ""
+
+#: R/rename.R:197
+msgid "  %s → %s"
+msgstr ""
+
+#: R/rename.R:198
+msgid "  Could not rename %s: %s"
+msgstr ""
+
+#: R/rename.R:202
+msgid "%d column(s) renamed in table '%s'"
+msgstr ""
+
+#: R/rename.R:203
+msgid "Kept unchanged: %s"
+msgstr ""
+
+#: R/schema.R:179
+msgid "No canonical schema for table {.val %s}."
+msgstr ""
+
+#: R/schema.R:188
+msgid "Table {.val %s} created with canonical schema (%d columns)."
+msgstr ""
+
+#: R/schema.R:205
+msgid "New column {.col %s} added to {.val %s} as %s."
+msgstr ""
+
+#: R/schema.R:208
+msgid "Could not add column {.col %s}: %s"
+msgstr ""
+
+#: R/status.R:56
+#: R/status.R:62
+msgid "HuggingFace repository %s"
+msgstr ""
+
+#: R/status.R:57
+msgid "Latency: %d ms"
+msgstr ""
+
+#: R/status.R:58
+msgid "Dataset: {.url %s}"
+msgstr ""
+
+#: R/status.R:64
+msgid "Tested: {.url %s}"
+msgstr ""
+
+#: R/status.R:65
+msgid "Check your connection or try again later."
+msgstr ""
+
