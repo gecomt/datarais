@@ -1,4 +1,4 @@
-url: https://alexsandroprado.github.io/datarais/
+url: https://gecomt.github.io/datarais/
 
 template:
   bootstrap: 5
@@ -18,7 +18,7 @@ navbar:
   components:
     github:
       icon: fab fa-github fa-lg
-      href: https://github.com/alexsandroprado/datarais
+      href: https://github.com/gecomt/datarais
 
 reference:
   - title: "Pipeline principal"
