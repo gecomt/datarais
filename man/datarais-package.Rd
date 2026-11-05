@@ -19,6 +19,9 @@ Os dados são baixados do repositório HuggingFace
 extraídos de arquivos \verb{.7z} e carregados em um banco DuckDB local
 para consultas rápidas com SQL ou dplyr.
 }
+\details{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='datarais logo' width='120'}}
+}
 \section{Fluxo típico de uso}{
 
 
@@ -68,8 +71,8 @@ dplyr::tbl(con, "rais_novo") |>
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/alexsandroprado/datarais}
-  \item Report bugs at \url{https://github.com/alexsandroprado/datarais/issues}
+  \item \url{https://github.com/gecomt/datarais}
+  \item Report bugs at \url{https://github.com/gecomt/datarais/issues}
 }
 
 }

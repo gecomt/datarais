@@ -1,5 +1,6 @@
 #' datarais: Microdados da RAIS em DuckDB
 #'
+#' \if{html}{\figure{logo.png}{options: style='float: right' alt='datarais logo' width='120'}}
 #'
 #' @description
 #' O pacote `datarais` facilita o acesso aos microdados da RAIS

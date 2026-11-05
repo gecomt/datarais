@@ -1,11 +1,14 @@
-# datarais
+# datarais <img src="man/figures/logo.png" align="right" height="139" alt="datarais hex logo" />
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/alexsandroprado/datarais/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/alexsandroprado/datarais/actions/workflows/R-CMD-check.yaml)
-[![Codecov test coverage](https://codecov.io/gh/alexsandroprado/datarais/branch/main/graph/badge.svg)](https://app.codecov.io/gh/alexsandroprado/datarais?branch=main)
-[![CRAN status](https://www.r-pkg.org/badges/version/datarais)](https://CRAN.R-project.org/package=datarais)
+[![R-CMD-check](https://img.shields.io/github/actions/workflow/status/gecomt/datarais/R-CMD-check.yaml?branch=main&label=R-CMD-check)](https://github.com/gecomt/datarais/actions/workflows/R-CMD-check.yaml)
+[![Test coverage](https://img.shields.io/codecov/c/github/gecomt/datarais/main?label=coverage)](https://app.codecov.io/gh/gecomt/datarais?branch=main)
+[![CRAN status](https://img.shields.io/cran/v/datarais?label=CRAN)](https://CRAN.R-project.org/package=datarais)
+[![R >= 4.1](https://img.shields.io/badge/R-%E2%89%A5%204.1-276DC3.svg?logo=r&logoColor=white)](https://www.r-project.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![Data: HuggingFace](https://img.shields.io/badge/data-HuggingFace-FFD21E.svg?logo=huggingface&logoColor=black)](https://huggingface.co/datasets/alexsandroprado/rais)
+[![DuckDB](https://img.shields.io/badge/storage-DuckDB-FFF000.svg?logo=duckdb&logoColor=black)](https://duckdb.org)
 <!-- badges: end -->
 
 *Leia em [Portugues](README.pt-BR.md)*
@@ -36,7 +39,7 @@ consistent across all historical layouts and years.
 install.packages("datarais")
 
 # Development version
-pak::pak("alexsandroprado/datarais")
+pak::pak("gecomt/datarais")
 ```
 
 ## Hardware requirements
@@ -273,7 +276,7 @@ head(uf_codigos)
 - Vignette (introduction): `vignette("datarais")`
 - Vignette (historical series): `vignette("serie-historica")`
 - Full reference: `help(package = "datarais")`
-- Website: <https://alexsandroprado.github.io/datarais/>
+- Website: <https://gecomt.github.io/datarais/>
 
 ## Cache and parallel downloads
 
@@ -294,14 +297,14 @@ citation("datarais")
 
 ```
 Prado, A. (2025). datarais: Access to RAIS Microdata via HuggingFace and DuckDB.
-R package version 0.1.0. https://github.com/alexsandroprado/datarais
+R package version 0.1.0. https://github.com/gecomt/datarais
 ```
 
 ## Contributing
 
 Contributions are welcome. Please see
 [`CONTRIBUTING.md`](CONTRIBUTING.md) for guidelines.
-Report bugs via [Issues](https://github.com/alexsandroprado/datarais/issues).
+Report bugs via [Issues](https://github.com/gecomt/datarais/issues).
 
 ## License
 
